@@ -1,0 +1,94 @@
+.card-catalog {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    @media (max-width: 992px) {
+        gap: 15px;
+    }
+    @media (any-hover: hover) {
+        &:hover {
+            .card-catalog__arrow {
+                background-color: var(--1f4b98);
+            }
+        }
+    }
+    // .card-catalog__image
+
+    &__image {
+        display: flex;
+        align-items: flex-end;
+        position: relative;
+        border-radius: 15px;
+        overflow: hidden;
+        aspect-ratio: 410 / 340;
+        background: var(--f0f4f4);
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        &::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 10px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.3);
+        }
+    }
+
+    // .card-catalog__item
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        justify-content: space-between;
+        padding: 0px 30px;
+        @media (max-width: 992px) {
+            padding: 0px 15px;
+        }
+        @media (max-width: 500px) {
+            padding: 0px 10px;
+            gap: 10px;
+        }
+    }
+
+    // .card-catalog__titles
+
+    &__titles {
+    }
+
+    // .card-catalog__title
+
+    &__title {
+        font-family: var(--second-family);
+        font-weight: 700;
+        font-size: 22px;
+        line-height: 118%;
+        @media (max-width: 768px) {
+            font-size: 18px;
+        }
+        @media (max-width: 550px) {
+            font-size: 16px;
+        }
+    }
+
+    // .card-catalog__arrow
+
+    &__arrow {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex: 0 0 30px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: var(--63c8f4);
+        transition: background-color 0.3s;
+        svg {
+            fill: var(--ffffff);
+        }
+    }
+}
