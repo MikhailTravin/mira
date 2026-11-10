@@ -151,7 +151,6 @@ function uniqArray(array) {
 
 //========================================================================================================================================================
 
-/*
 const iconMenu = document.querySelector('.icon-menu');
 const headerBody = document.querySelector('.header__menu');
 
@@ -170,6 +169,1107 @@ document.addEventListener("click", function (e) {
     document.documentElement.classList.remove("menu-open");
   }
 });
+
+//========================================================================================================================================================
+
+
+// Добавление к шапке при скролле
+const header = document.querySelector('.header');
+if (header) {
+  window.addEventListener('scroll', function () {
+    if (window.scrollY > 0) {
+      header.classList.add('_header-scroll');
+      document.documentElement.classList.add('header-scroll');
+    } else {
+      header.classList.remove('_header-scroll');
+      document.documentElement.classList.remove('header-scroll');
+    }
+  });
+}
+
+//========================================================================================================================================================
+
+//Форма
+function formFieldsInit(options = { viewPass: true, autoHeight: false }) {
+  document.body.addEventListener("focusin", function (e) {
+    const targetElement = e.target;
+    if ((targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA')) {
+      if (!targetElement.hasAttribute('data-no-focus-classes')) {
+        targetElement.classList.add('_form-focus');
+        targetElement.parentElement.classList.add('_form-focus');
+      }
+      formValidate.removeError(targetElement);
+      targetElement.hasAttribute('data-validate') ? formValidate.removeError(targetElement) : null;
+    }
+  });
+  document.body.addEventListener("focusout", function (e) {
+    const targetElement = e.target;
+    if ((targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA')) {
+      if (!targetElement.hasAttribute('data-no-focus-classes')) {
+        targetElement.classList.remove('_form-focus');
+        targetElement.parentElement.classList.remove('_form-focus');
+      }
+      targetElement.hasAttribute('data-validate') ? formValidate.validateInput(targetElement) : null;
+    }
+  });
+  document.body.addEventListener("input", function (e) {
+    const targetElement = e.target;
+    if (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA') {
+      if (targetElement.value.trim()) {
+        targetElement.classList.add('filled');
+        targetElement.parentElement.classList.add('filled');
+      } else {
+        targetElement.classList.remove('filled');
+        targetElement.parentElement.classList.remove('filled');
+      }
+    }
+  });
+  document.body.addEventListener("change", function (e) {
+    const targetElement = e.target;
+    if (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA') {
+      if (targetElement.value.trim()) {
+        targetElement.classList.add('filled');
+        targetElement.parentElement.classList.add('filled');
+      } else {
+        targetElement.classList.remove('filled');
+        targetElement.parentElement.classList.remove('filled');
+      }
+    }
+  });
+  if (options.viewPass) {
+    document.addEventListener("click", function (e) {
+      const targetElement = e.target;
+      if (targetElement.closest('.form__viewpass')) {
+        const viewpassBlock = targetElement.closest('.form__viewpass');
+        const input = viewpassBlock.closest('.form__input').querySelector('input');
+
+        if (input) {
+          const isActive = viewpassBlock.classList.contains('_viewpass-active');
+          input.setAttribute("type", isActive ? "password" : "text");
+          viewpassBlock.classList.toggle('_viewpass-active');
+        } else {
+          console.error('Input не найден!');
+        }
+      }
+    });
+  }
+  if (options.autoHeight) {
+    const textareas = document.querySelectorAll('textarea[data-autoheight]');
+    if (textareas.length) {
+      textareas.forEach(textarea => {
+        const startHeight = textarea.hasAttribute('data-autoheight-min') ?
+          Number(textarea.dataset.autoheightMin) : Number(textarea.offsetHeight);
+        const maxHeight = textarea.hasAttribute('data-autoheight-max') ?
+          Number(textarea.dataset.autoheightMax) : Infinity;
+        setHeight(textarea, Math.min(startHeight, maxHeight))
+        textarea.addEventListener('input', () => {
+          if (textarea.scrollHeight > startHeight) {
+            textarea.style.height = `auto`;
+            setHeight(textarea, Math.min(Math.max(textarea.scrollHeight, startHeight), maxHeight));
+          }
+        });
+      });
+      function setHeight(textarea, height) {
+        textarea.style.height = `${height}px`;
+      }
+    }
+  }
+}
+formFieldsInit({
+  viewPass: true,
+  autoHeight: false
+});
+
+let formValidate = {
+  getErrors(form) {
+    let error = 0;
+    let formRequiredItems = form.querySelectorAll('*[data-required]');
+    if (formRequiredItems.length) {
+      formRequiredItems.forEach(formRequiredItem => {
+        if ((formRequiredItem.offsetParent !== null || formRequiredItem.tagName === "SELECT") && !formRequiredItem.disabled) {
+          error += this.validateInput(formRequiredItem);
+        }
+      });
+    }
+    return error;
+  },
+  validateInput(formRequiredItem) {
+    let error = 0;
+
+    if (formRequiredItem.dataset.required === "email") {
+      formRequiredItem.value = formRequiredItem.value.replace(" ", "");
+      if (this.emailTest(formRequiredItem)) {
+        this.addError(formRequiredItem);
+        this.removeSuccess(formRequiredItem);
+        error++;
+      } else {
+        this.removeError(formRequiredItem);
+        this.addSuccess(formRequiredItem);
+      }
+    } else if (formRequiredItem.type === "checkbox" && !formRequiredItem.checked) {
+      this.addError(formRequiredItem);
+      this.removeSuccess(formRequiredItem);
+      error++;
+    } else if (formRequiredItem.dataset.validate === "password-confirm") {
+      const passwordInput = document.getElementById('password');
+      if (!passwordInput) return error;
+
+      if (formRequiredItem.value !== passwordInput.value) {
+        this.addError(formRequiredItem);
+        this.removeSuccess(formRequiredItem);
+        error++;
+      } else {
+        this.removeError(formRequiredItem);
+        this.addSuccess(formRequiredItem);
+      }
+    } else {
+      if (!formRequiredItem.value.trim()) {
+        this.addError(formRequiredItem);
+        this.removeSuccess(formRequiredItem);
+        error++;
+      } else {
+        this.removeError(formRequiredItem);
+        this.addSuccess(formRequiredItem);
+      }
+    }
+
+    return error;
+  },
+  addError(formRequiredItem) {
+    formRequiredItem.classList.add('_form-error');
+    formRequiredItem.parentElement.classList.add('_form-error');
+    let inputError = formRequiredItem.parentElement.querySelector('.form__error');
+    if (inputError) formRequiredItem.parentElement.removeChild(inputError);
+    if (formRequiredItem.dataset.error) {
+      formRequiredItem.parentElement.insertAdjacentHTML('beforeend', `<div class="form__error">${formRequiredItem.dataset.error}</div>`);
+    }
+  },
+  removeError(formRequiredItem) {
+    formRequiredItem.classList.remove('_form-error');
+    formRequiredItem.parentElement.classList.remove('_form-error');
+    if (formRequiredItem.parentElement.querySelector('.form__error')) {
+      formRequiredItem.parentElement.removeChild(formRequiredItem.parentElement.querySelector('.form__error'));
+    }
+  },
+  addSuccess(formRequiredItem) {
+    formRequiredItem.classList.add('_form-success');
+    formRequiredItem.parentElement.classList.add('_form-success');
+  },
+  removeSuccess(formRequiredItem) {
+    formRequiredItem.classList.remove('_form-success');
+    formRequiredItem.parentElement.classList.remove('_form-success');
+  },
+  formClean(form) {
+    form.reset();
+    setTimeout(() => {
+      let inputs = form.querySelectorAll('input,textarea');
+      for (let index = 0; index < inputs.length; index++) {
+        const el = inputs[index];
+        el.parentElement.classList.remove('_form-focus');
+        el.classList.remove('_form-focus');
+
+        el.classList.remove('_form-success');
+        el.parentElement.classList.remove('_form-success');
+
+        el.parentElement.classList.remove('filled');
+        el.classList.remove('filled');
+
+        formValidate.removeError(el);
+
+        if (el.classList.contains('telephone') && el.clearFilled) {
+          el.clearFilled();
+        }
+      }
+
+      let checkboxes = form.querySelectorAll('.checkbox__input');
+      if (checkboxes.length > 0) {
+        for (let index = 0; index < checkboxes.length; index++) {
+          const checkbox = checkboxes[index];
+          checkbox.checked = false;
+          checkbox.classList.remove('_form-success');
+          checkbox.closest('.checkbox')?.classList.remove('_form-success');
+        }
+      }
+
+      if (modules_flsModules.select) {
+        let selects = form.querySelectorAll('div.select');
+        if (selects.length) {
+          for (let index = 0; index < selects.length; index++) {
+            const select = selects[index].querySelector('select');
+            modules_flsModules.select.selectBuild(select);
+          }
+        }
+      }
+    }, 0);
+  },
+  emailTest(formRequiredItem) {
+    return !/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,8})+$/.test(formRequiredItem.value);
+  }
+};
+
+function formSubmit() {
+  const forms = document.forms;
+  if (forms.length) {
+    for (const form of forms) {
+      form.addEventListener('submit', function (e) {
+        const form = e.target;
+        formSubmitAction(form, e);
+      });
+      form.addEventListener('reset', function (e) {
+        const form = e.target;
+        formValidate.formClean(form);
+      });
+    }
+  }
+
+  async function formSubmitAction(form, e) {
+    const error = !form.hasAttribute('data-no-validate') ? formValidate.getErrors(form) : 0;
+
+    if (error === 0) {
+      const ajax = form.hasAttribute('data-ajax');
+
+      if (ajax) {
+        e.preventDefault();
+
+        const customSelects = form.querySelectorAll('.select');
+
+        customSelects.forEach(selectItem => {
+          const originalSelect = selectItem.querySelector('select');
+          if (!originalSelect) return;
+
+          let contactMethod = 'Не выбран';
+          let contactValue = 'Не указан';
+
+          const selectedOption = originalSelect.options[originalSelect.selectedIndex];
+
+          if (selectedOption && selectedOption.value) {
+            if (selectedOption.dataset.custom === 'true') {
+              contactMethod = originalSelect.dataset.currentMethod || 'Не выбран';
+              contactValue = originalSelect.dataset.userInput || selectedOption.value;
+            } else {
+              contactMethod = selectedOption.dataset.value || selectedOption.value;
+              contactValue = selectedOption.value;
+              originalSelect.dataset.currentMethod = contactMethod;
+            }
+          }
+
+          const oldMethodInput = form.querySelector('input[name="contact_method"]');
+          const oldValueInput = form.querySelector('input[name="user_contact_value"]');
+          if (oldMethodInput) oldMethodInput.remove();
+          if (oldValueInput) oldValueInput.remove();
+
+          const methodInput = document.createElement('input');
+          methodInput.type = 'hidden';
+          methodInput.name = 'contact_method';
+          methodInput.value = contactMethod;
+          form.appendChild(methodInput);
+
+          const valueInput = document.createElement('input');
+          valueInput.type = 'hidden';
+          valueInput.name = 'user_contact_value';
+          valueInput.value = contactValue;
+          form.appendChild(valueInput);
+        });
+
+        const formAction = form.getAttribute('action') ? form.getAttribute('action').trim() : '#';
+        const formMethod = form.getAttribute('method') ? form.getAttribute('method').trim() : 'GET';
+        const formData = new FormData(form);
+
+        form.classList.add('_sending');
+
+        try {
+          const response = await fetch(formAction, {
+            method: formMethod,
+            body: formData
+          });
+
+          if (response.ok) {
+            const textResponse = await response.text();
+
+            try {
+              let responseResult = JSON.parse(textResponse);
+
+              form.classList.remove('_sending');
+
+              if (responseResult.success) {
+                formSent(form, responseResult);
+
+                setTimeout(() => {
+                  form.reset();
+                  const allSelects = form.querySelectorAll('select');
+                  allSelects.forEach(select => {
+                    delete select.dataset.userInput;
+                    delete select.dataset.currentMethod;
+                    const customOpt = select.querySelector('option[data-custom="true"]');
+                    if (customOpt) customOpt.remove();
+                    Array.from(select.options).forEach(option => {
+                      if (option.dataset.originalValue) {
+                        option.value = option.dataset.originalValue;
+                        delete option.dataset.originalValue;
+                      }
+                    });
+                    select.selectedIndex = 0;
+                  });
+                }, 500);
+
+              } else {
+                alert("Ошибка: " + (responseResult.message || "Неизвестная ошибка"));
+              }
+            } catch (parseError) {
+              alert("Ошибка: сервер вернул неверный формат данных");
+            }
+          } else {
+            alert("Ошибка сервера: " + response.status);
+            form.classList.remove('_sending');
+          }
+        } catch (error) {
+          alert("Ошибка отправки формы: " + error.message);
+          form.classList.remove('_sending');
+        }
+      } else if (form.hasAttribute('data-dev')) {
+        e.preventDefault();
+        formSent(form);
+      }
+    } else {
+      e.preventDefault();
+      if (form.querySelector('._form-error') && form.hasAttribute('data-goto-error')) {
+        const formGoToErrorClass = form.dataset.gotoError ? form.dataset.gotoError : '._form-error';
+        gotoBlock(formGoToErrorClass, true, 1000);
+      }
+    }
+  }
+
+  function formSent(form, responseResult = ``) {
+    document.dispatchEvent(new CustomEvent("formSent", {
+      detail: {
+        form: form
+      }
+    }));
+
+    const telephoneInputs = form.querySelectorAll('.telephone');
+    telephoneInputs.forEach(input => {
+      input.value = '';
+      const parent = input.closest('.form__input');
+      if (parent) {
+        parent.classList.remove('filled');
+      }
+      input.classList.remove('filled');
+    });
+
+    const fileInputs = form.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(fileInput => {
+      fileInput.value = '';
+      const formFile = fileInput.closest('.form-file');
+      if (formFile) {
+        const formFileInput = formFile.querySelector('.form-file__input');
+        if (formFileInput) {
+          const originalText = formFileInput.dataset.originalText || 'Прикрепить текущий расчет / КП';
+          formFileInput.textContent = originalText;
+        }
+      }
+    });
+
+    const customSelects = form.querySelectorAll('.select');
+    customSelects.forEach(selectItem => {
+      const originalSelect = selectItem.querySelector('select');
+      if (originalSelect) {
+        const customOption = originalSelect.querySelector('option[data-custom="true"]');
+        if (customOption) {
+          customOption.remove();
+        }
+
+        Array.from(originalSelect.options).forEach(option => {
+          if (option.dataset.originalValue) {
+            option.value = option.dataset.originalValue;
+            delete option.dataset.originalValue;
+          }
+        });
+
+        originalSelect.selectedIndex = 0;
+
+        delete originalSelect.dataset.userInput;
+        delete originalSelect.dataset.currentMethod;
+
+        const contentInput = selectItem.querySelector('.select__content');
+        if (contentInput) {
+          contentInput.value = '';
+          const placeholder = originalSelect.dataset.placeholder || '';
+          contentInput.placeholder = placeholder;
+        }
+
+        selectItem.classList.remove('_select-active');
+
+        const optionButtons = selectItem.querySelectorAll('.select__option');
+        optionButtons.forEach(btn => {
+          btn.hidden = false;
+        });
+
+        if (!originalSelect.hasAttribute('data-show-selected')) {
+          const firstOption = selectItem.querySelector('.select__option[data-value]');
+          if (firstOption && originalSelect.selectedIndex === 0) {
+            firstOption.hidden = true;
+          }
+        }
+
+        if (typeof SelectConstructor !== 'undefined') {
+          const selectInstance = new SelectConstructor({ init: false });
+          selectInstance.setSelectTitleValue(selectItem, originalSelect);
+        }
+      }
+    });
+
+    const hiddenInputs = form.querySelectorAll('input[type="hidden"]');
+    hiddenInputs.forEach(input => {
+      if (input.name === 'button_subject' ||
+        input.name === 'contact_method' ||
+        input.name === 'user_contact_value') {
+        input.value = '';
+      }
+    });
+
+    if (typeof formValidate !== 'undefined' && formValidate.formClean) {
+      formValidate.formClean(form);
+    }
+
+    const popupSelector = form.dataset.popupMessage;
+    let popup = null;
+
+    if (popupSelector) {
+      if (popupSelector.startsWith('#')) {
+        popup = document.querySelector(popupSelector);
+      } else {
+        popup = document.querySelector(`[data-popup="${popupSelector}"]`) ||
+          document.querySelector(`.${popupSelector.replace('.', '')}`);
+      }
+    }
+
+    document.querySelectorAll('.popup_show').forEach(p => {
+      p.classList.remove('popup_show');
+      p.setAttribute('aria-hidden', 'true');
+    });
+
+    if (popup) {
+      if (typeof popupOpen === 'function') {
+        popupOpen(popupSelector);
+      }
+      else if (typeof openPopup === 'function') {
+        openPopup(popup);
+      }
+      else {
+        popup.classList.add('popup_show');
+        popup.setAttribute('aria-hidden', 'false');
+
+        document.documentElement.classList.add('lock', 'popup-show');
+
+        if (typeof bodyLock === 'function') {
+          bodyLock();
+        } else if (typeof bodyLockToggle === 'function') {
+          bodyLockToggle();
+        } else {
+          document.body.style.overflow = 'hidden';
+          document.body.style.paddingRight = '17px';
+        }
+      }
+
+      document.documentElement.classList.remove('open-quiz');
+
+      const closePopupHandler = function (e) {
+        if (e.target === popup || e.target.closest('.popup__close') || e.target.closest('[data-close]')) {
+          popup.classList.remove('popup_show');
+          popup.setAttribute('aria-hidden', 'true');
+          document.documentElement.classList.remove('lock', 'popup-show');
+          document.body.style.overflow = '';
+          document.body.style.paddingRight = '';
+          document.removeEventListener('click', closePopupHandler);
+        }
+      };
+
+      setTimeout(() => {
+        document.addEventListener('click', closePopupHandler);
+      }, 100);
+
+    } else {
+      window.location.href = 'thanks.html';
+    }
+  }
+}
+
+formSubmit();
+
+//========================================================================================================================================================
+
+class SelectConstructor {
+  constructor(props, data = null) {
+    let defaultConfig = {
+      init: true,
+      logging: true,
+      speed: 150
+    }
+    this.config = Object.assign(defaultConfig, props);
+    this.selectClasses = {
+      classSelect: "select",
+      classSelectBody: "select__body",
+      classSelectTitle: "select__title",
+      classSelectValue: "select__value",
+      classSelectLabel: "select__label",
+      classSelectInput: "select__input",
+      classSelectText: "select__text",
+      classSelectLink: "select__link",
+      classSelectOptions: "select__options",
+      classSelectOptionsScroll: "select__scroll",
+      classSelectOption: "select__option",
+      classSelectContent: "select__content",
+      classSelectRow: "select__row",
+      classSelectData: "select__asset",
+      classSelectArrow: "select__arrow",
+      classSelectDisabled: "_select-disabled",
+      classSelectTag: "_select-tag",
+      classSelectOpen: "_select-open",
+      classSelectActive: "_select-active",
+      classSelectFocus: "_select-focus",
+      classSelectMultiple: "_select-multiple",
+      classSelectCheckBox: "_select-checkbox",
+      classSelectOptionSelected: "_select-selected",
+      classSelectPseudoLabel: "_select-pseudo-label",
+    }
+    this._this = this;
+    if (this.config.init) {
+      const selectItems = data ? document.querySelectorAll(data) : document.querySelectorAll('select');
+      if (selectItems.length) {
+        this.selectsInit(selectItems);
+      }
+    }
+  }
+  getSelectClass(className) {
+    return `.${className}`;
+  }
+  getSelectElement(selectItem, className) {
+    return {
+      originalSelect: selectItem.querySelector('select'),
+      selectElement: selectItem.querySelector(this.getSelectClass(className)),
+    }
+  }
+  selectsInit(selectItems) {
+    selectItems.forEach((originalSelect, index) => {
+      this.selectInit(originalSelect, index + 1);
+    });
+    document.addEventListener('click', function (e) {
+      this.selectsActions(e);
+    }.bind(this));
+    document.addEventListener('keydown', function (e) {
+      this.selectsActions(e);
+    }.bind(this));
+    document.addEventListener('focusin', function (e) {
+      this.selectsActions(e);
+    }.bind(this));
+    document.addEventListener('focusout', function (e) {
+      this.selectsActions(e);
+    }.bind(this));
+  }
+  selectInit(originalSelect, index) {
+    const _this = this;
+    let selectItem = document.createElement("div");
+    selectItem.classList.add(this.selectClasses.classSelect);
+    originalSelect.parentNode.insertBefore(selectItem, originalSelect);
+    selectItem.appendChild(originalSelect);
+    originalSelect.hidden = true;
+    index ? originalSelect.dataset.id = index : null;
+
+    selectItem.insertAdjacentHTML('beforeend', `<div class="${this.selectClasses.classSelectBody}"><div hidden class="${this.selectClasses.classSelectOptions}"></div></div>`);
+
+    if (this.getSelectPlaceholder(originalSelect)) {
+      originalSelect.dataset.placeholder = this.getSelectPlaceholder(originalSelect).value;
+    }
+
+    this.selectBuild(originalSelect);
+
+    originalSelect.dataset.speed = originalSelect.dataset.speed ? originalSelect.dataset.speed : this.config.speed;
+    this.config.speed = +originalSelect.dataset.speed;
+
+    originalSelect.addEventListener('change', function (e) {
+      _this.selectChange(e);
+    });
+  }
+  selectBuild(originalSelect) {
+    const selectItem = originalSelect.parentElement;
+
+    selectItem.dataset.id = originalSelect.dataset.id;
+    originalSelect.dataset.classModif ? selectItem.classList.add(`select_${originalSelect.dataset.classModif}`) : null;
+
+    originalSelect.multiple ? selectItem.classList.add(this.selectClasses.classSelectMultiple) : selectItem.classList.remove(this.selectClasses.classSelectMultiple);
+
+    originalSelect.hasAttribute('data-checkbox') && originalSelect.multiple ? selectItem.classList.add(this.selectClasses.classSelectCheckBox) : selectItem.classList.remove(this.selectClasses.classSelectCheckBox);
+
+    this.setSelectTitleValue(selectItem, originalSelect);
+    this.setOptions(selectItem, originalSelect);
+    originalSelect.hasAttribute('data-search') ? this.searchActions(selectItem) : null;
+
+    originalSelect.hasAttribute('data-open') ? this.selectAction(selectItem) : null;
+
+    this.selectDisabled(selectItem, originalSelect);
+  }
+  selectsActions(e) {
+    const targetElement = e.target;
+    const targetType = e.type;
+    if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelect)) || targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTag))) {
+      const selectItem = targetElement.closest('.select') ? targetElement.closest('.select') : document.querySelector(`.${this.selectClasses.classSelect}[data-id="${targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTag)).dataset.selectId}"]`);
+      const originalSelect = this.getSelectElement(selectItem).originalSelect;
+      if (targetType === 'click') {
+        if (!originalSelect.disabled) {
+          if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTag))) {
+
+            const targetTag = targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTag));
+            const optionItem = document.querySelector(`.${this.selectClasses.classSelect}[data-id="${targetTag.dataset.selectId}"] .select__option[data-value="${targetTag.dataset.value}"]`);
+            this.optionAction(selectItem, originalSelect, optionItem);
+          } else if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelectTitle))) {
+            this.selectAction(selectItem);
+          } else if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelectOption))) {
+            const optionItem = targetElement.closest(this.getSelectClass(this.selectClasses.classSelectOption));
+            this.optionAction(selectItem, originalSelect, optionItem);
+          }
+        }
+      } else if (targetType === 'focusin' || targetType === 'focusout') {
+        if (targetElement.closest(this.getSelectClass(this.selectClasses.classSelect))) {
+          targetType === 'focusin' ? selectItem.classList.add(this.selectClasses.classSelectFocus) : selectItem.classList.remove(this.selectClasses.classSelectFocus);
+        }
+      } else if (targetType === 'keydown' && e.code === 'Escape') {
+        this.selectsСlose();
+      }
+    } else {
+      this.selectsСlose();
+    }
+  }
+  selectsСlose(selectOneGroup) {
+    const selectsGroup = selectOneGroup ? selectOneGroup : document;
+    const selectActiveItems = selectsGroup.querySelectorAll(`${this.getSelectClass(this.selectClasses.classSelect)}${this.getSelectClass(this.selectClasses.classSelectOpen)}`);
+    if (selectActiveItems.length) {
+      selectActiveItems.forEach(selectActiveItem => {
+        this.selectСlose(selectActiveItem);
+      });
+    }
+  }
+  selectСlose(selectItem) {
+    const originalSelect = this.getSelectElement(selectItem).originalSelect;
+    const selectOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+    if (!selectOptions.classList.contains('_slide')) {
+      selectItem.classList.remove(this.selectClasses.classSelectOpen);
+      _slideUp(selectOptions, originalSelect.dataset.speed);
+      setTimeout(() => {
+        selectItem.style.zIndex = '';
+      }, originalSelect.dataset.speed);
+    }
+  }
+  selectAction(selectItem) {
+    const originalSelect = this.getSelectElement(selectItem).originalSelect;
+    const selectOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+    const selectOpenzIndex = originalSelect.dataset.zIndex ? originalSelect.dataset.zIndex : 3;
+
+    this.setOptionsPosition(selectItem);
+
+    this.selectsСlose();
+
+    setTimeout(() => {
+      if (!selectOptions.classList.contains('_slide')) {
+        selectItem.classList.toggle(this.selectClasses.classSelectOpen);
+        _slideToggle(selectOptions, originalSelect.dataset.speed);
+
+        if (selectItem.classList.contains(this.selectClasses.classSelectOpen)) {
+          selectItem.style.zIndex = selectOpenzIndex;
+        } else {
+          setTimeout(() => {
+            selectItem.style.zIndex = '';
+          }, originalSelect.dataset.speed);
+        }
+      }
+    }, 0);
+  }
+  setSelectTitleValue(selectItem, originalSelect) {
+    const selectItemBody = this.getSelectElement(selectItem, this.selectClasses.classSelectBody).selectElement;
+    const selectItemTitle = this.getSelectElement(selectItem, this.selectClasses.classSelectTitle).selectElement;
+    if (selectItemTitle) selectItemTitle.remove();
+    selectItemBody.insertAdjacentHTML("afterbegin", this.getSelectTitleValue(selectItem, originalSelect));
+
+    originalSelect.hasAttribute('data-search') ? this.searchActions(selectItem) : null;
+  }
+  getSelectTitleValue(selectItem, originalSelect) {
+    let selectTitleValue = this.getSelectedOptionsData(originalSelect, 2).html;
+    const selectedOptions = this.getSelectedOptionsData(originalSelect);
+
+    if (originalSelect.multiple && originalSelect.hasAttribute('data-tags')) {
+      selectTitleValue = selectedOptions.elements.map(option => `<span role="button" data-select-id="${selectItem.dataset.id}" data-value="${option.value}" class="${this.selectClasses.classSelectTag}">${this.getSelectElementContent(option)}</span>`).join('');
+
+      if (originalSelect.dataset.tags && document.querySelector(originalSelect.dataset.tags)) {
+        document.querySelector(originalSelect.dataset.tags).innerHTML = selectTitleValue;
+        if (originalSelect.hasAttribute('data-search')) selectTitleValue = false;
+      }
+    }
+
+    if (selectedOptions.values.length > 0) {
+      selectTitleValue = selectTitleValue.length ? selectTitleValue : '';
+    } else {
+      selectTitleValue = originalSelect.dataset.placeholder ? originalSelect.dataset.placeholder : '';
+    }
+
+    let pseudoAttribute = '';
+    let pseudoAttributeClass = '';
+    if (originalSelect.hasAttribute('data-pseudo-label')) {
+      pseudoAttribute = originalSelect.dataset.pseudoLabel ? ` data-pseudo-label="${originalSelect.dataset.pseudoLabel}"` : ` data-pseudo-label="Заповніть атрибут"`;
+      pseudoAttributeClass = ` ${this.selectClasses.classSelectPseudoLabel}`;
+    }
+
+    selectedOptions.values.length ? selectItem.classList.add(this.selectClasses.classSelectActive) : selectItem.classList.remove(this.selectClasses.classSelectActive);
+
+    if (originalSelect.hasAttribute('data-search')) {
+      return `<div class="${this.selectClasses.classSelectTitle}"><span${pseudoAttribute} class="${this.selectClasses.classSelectValue}"><input autocomplete="off" type="text" placeholder="${selectTitleValue}" data-placeholder="${selectTitleValue}" class="${this.selectClasses.classSelectInput}"></span></div>`;
+    } else {
+      const customClass = selectedOptions.elements.length && selectedOptions.elements[0] && selectedOptions.elements[0].dataset.class ? ` ${selectedOptions.elements[0].dataset.class}` : '';
+
+      return `<button type="button" class="${this.selectClasses.classSelectTitle}"><span${pseudoAttribute} class="${this.selectClasses.classSelectValue}${pseudoAttributeClass}"><span class="${this.selectClasses.classSelectContent}${customClass}">${selectTitleValue}</span><span class="${this.selectClasses.classSelectArrow}"></span></span></button>`;
+    }
+  }
+  getSelectElementContent(selectOption) {
+    const selectOptionData = selectOption.dataset.asset ? `${selectOption.dataset.asset}` : '';
+    const selectOptionDataHTML = selectOptionData.indexOf('img') >= 0 ? `<img src="${selectOptionData}" alt="">` : selectOptionData;
+    let selectOptionContentHTML = ``;
+    selectOptionContentHTML += selectOptionData ? `<span class="${this.selectClasses.classSelectRow}">` : '';
+    selectOptionContentHTML += selectOptionData ? `<span class="${this.selectClasses.classSelectData}">` : '';
+    selectOptionContentHTML += selectOptionData ? selectOptionDataHTML : '';
+    selectOptionContentHTML += selectOptionData ? `</span>` : '';
+    selectOptionContentHTML += selectOptionData ? `<span class="${this.selectClasses.classSelectText}">` : '';
+    selectOptionContentHTML += selectOption.textContent;
+    selectOptionContentHTML += selectOptionData ? `</span>` : '';
+    selectOptionContentHTML += selectOptionData ? `</span>` : '';
+    return selectOptionContentHTML;
+  }
+  getSelectPlaceholder(originalSelect) {
+    const selectPlaceholder = Array.from(originalSelect.options).find(option => !option.value);
+    if (selectPlaceholder) {
+      return {
+        value: selectPlaceholder.textContent,
+        show: selectPlaceholder.hasAttribute("data-show"),
+        label: {
+          show: selectPlaceholder.hasAttribute("data-label"),
+          text: selectPlaceholder.dataset.label
+        }
+      }
+    }
+  }
+
+  getSelectedOptionsData(originalSelect, type) {
+    let selectedOptions = [];
+    if (originalSelect.multiple) {
+      selectedOptions = Array.from(originalSelect.options).filter(option => option.value).filter(option => option.selected);
+    } else {
+      if (originalSelect.selectedIndex >= 0 && originalSelect.options[originalSelect.selectedIndex]) {
+        const option = originalSelect.options[originalSelect.selectedIndex];
+        if (option.value) {
+          selectedOptions.push(option);
+        }
+      }
+    }
+    return {
+      elements: selectedOptions.map(option => option),
+      values: selectedOptions.filter(option => option && option.value).map(option => option.value),
+      html: selectedOptions.map(option => this.getSelectElementContent(option))
+    }
+  }
+  getOptions(originalSelect) {
+    const selectOptionsScroll = originalSelect.hasAttribute('data-scroll') ? `data-simplebar` : '';
+    const customMaxHeightValue = +originalSelect.dataset.scroll ? +originalSelect.dataset.scroll : null;
+    let selectOptions = Array.from(originalSelect.options);
+    if (selectOptions.length > 0) {
+      let selectOptionsHTML = ``;
+
+      selectOptions = selectOptions.filter(option => option.value);
+
+      selectOptionsHTML += `<div ${selectOptionsScroll} ${selectOptionsScroll ? `style="max-height: ${customMaxHeightValue}px"` : ''} class="${this.selectClasses.classSelectOptionsScroll}">`;
+      selectOptions.forEach(selectOption => {
+        selectOptionsHTML += this.getOption(selectOption, originalSelect);
+      });
+      selectOptionsHTML += `</div>`;
+      return selectOptionsHTML;
+    }
+  }
+  getOption(selectOption, originalSelect) {
+    const selectOptionSelected = selectOption.selected && originalSelect.multiple ? ` ${this.selectClasses.classSelectOptionSelected}` : '';
+
+    const selectOptionHide = selectOption.selected && !originalSelect.hasAttribute('data-show-selected') && !originalSelect.multiple && selectOption.value ? `hidden` : ``;
+
+    const selectOptionClass = selectOption.dataset.class ? ` ${selectOption.dataset.class}` : '';
+    const selectOptionLink = selectOption.dataset.href ? selectOption.dataset.href : false;
+    const selectOptionLinkTarget = selectOption.hasAttribute('data-href-blank') ? `target="_blank"` : '';
+    let selectOptionHTML = ``;
+    selectOptionHTML += selectOptionLink ? `<a ${selectOptionLinkTarget} ${selectOptionHide} href="${selectOptionLink}" data-value="${selectOption.value}" class="${this.selectClasses.classSelectOption}${selectOptionClass}${selectOptionSelected}">` : `<button ${selectOptionHide} class="${this.selectClasses.classSelectOption}${selectOptionClass}${selectOptionSelected}" data-value="${selectOption.value}" type="button">`;
+    selectOptionHTML += this.getSelectElementContent(selectOption);
+    selectOptionHTML += selectOptionLink ? `</a>` : `</button>`;
+    return selectOptionHTML;
+  }
+  setOptions(selectItem, originalSelect) {
+    const selectItemOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+    selectItemOptions.innerHTML = this.getOptions(originalSelect);
+  }
+  setOptionsPosition(selectItem) {
+    const originalSelect = this.getSelectElement(selectItem).originalSelect;
+    const selectOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+    const selectItemScroll = this.getSelectElement(selectItem, this.selectClasses.classSelectOptionsScroll).selectElement;
+    const customMaxHeightValue = +originalSelect.dataset.scroll ? `${+originalSelect.dataset.scroll}px` : ``;
+    const selectOptionsPosMargin = +originalSelect.dataset.optionsMargin ? +originalSelect.dataset.optionsMargin : 10;
+
+    if (!selectItem.classList.contains(this.selectClasses.classSelectOpen)) {
+      selectOptions.hidden = false;
+      const selectItemScrollHeight = selectItemScroll.offsetHeight ? selectItemScroll.offsetHeight : parseInt(window.getComputedStyle(selectItemScroll).getPropertyValue('max-height'));
+      const selectOptionsHeight = selectOptions.offsetHeight > selectItemScrollHeight ? selectOptions.offsetHeight : selectItemScrollHeight + selectOptions.offsetHeight;
+      const selectOptionsScrollHeight = selectOptionsHeight - selectItemScrollHeight;
+      selectOptions.hidden = true;
+
+      const selectItemHeight = selectItem.offsetHeight;
+      const selectItemPos = selectItem.getBoundingClientRect().top;
+      const selectItemTotal = selectItemPos + selectOptionsHeight + selectItemHeight + selectOptionsScrollHeight;
+      const selectItemResult = window.innerHeight - (selectItemTotal + selectOptionsPosMargin);
+
+      if (selectItemResult < 0) {
+        const newMaxHeightValue = selectOptionsHeight + selectItemResult;
+        if (newMaxHeightValue < 100) {
+          selectItem.classList.add('select--show-top');
+          selectItemScroll.style.maxHeight = selectItemPos < selectOptionsHeight ? `${selectItemPos - (selectOptionsHeight - selectItemPos)}px` : customMaxHeightValue;
+        } else {
+          selectItem.classList.remove('select--show-top');
+          selectItemScroll.style.maxHeight = `${newMaxHeightValue}px`;
+        }
+      }
+    } else {
+      setTimeout(() => {
+        selectItem.classList.remove('select--show-top');
+        selectItemScroll.style.maxHeight = customMaxHeightValue;
+      }, +originalSelect.dataset.speed);
+    }
+  }
+  optionAction(selectItem, originalSelect, optionItem) {
+    const selectOptions = selectItem.querySelector(`${this.getSelectClass(this.selectClasses.classSelectOptions)}`);
+    if (!selectOptions.classList.contains('_slide')) {
+      if (originalSelect.multiple) {
+        optionItem.classList.toggle(this.selectClasses.classSelectOptionSelected);
+        const originalSelectSelectedItems = this.getSelectedOptionsData(originalSelect).elements;
+        originalSelectSelectedItems.forEach(originalSelectSelectedItem => {
+          originalSelectSelectedItem.removeAttribute('selected');
+        });
+        const selectSelectedItems = selectItem.querySelectorAll(this.getSelectClass(this.selectClasses.classSelectOptionSelected));
+        selectSelectedItems.forEach(selectSelectedItems => {
+          originalSelect.querySelector(`option[value = "${selectSelectedItems.dataset.value}"]`).setAttribute('selected', 'selected');
+        });
+      } else {
+        if (optionItem.dataset.value) {
+          if (!originalSelect.hasAttribute('data-show-selected')) {
+            setTimeout(() => {
+              if (selectItem.querySelector(`${this.getSelectClass(this.selectClasses.classSelectOption)}[hidden]`)) {
+                selectItem.querySelector(`${this.getSelectClass(this.selectClasses.classSelectOption)}[hidden]`).hidden = false;
+              }
+              optionItem.hidden = true;
+            }, this.config.speed);
+          }
+          originalSelect.value = optionItem.dataset.value;
+          this.selectAction(selectItem);
+        }
+      }
+      this.setSelectTitleValue(selectItem, originalSelect);
+      this.setSelectChange(originalSelect);
+    }
+  }
+  selectChange(e) {
+    const originalSelect = e.target;
+    this.selectBuild(originalSelect);
+    this.setSelectChange(originalSelect);
+  }
+  setSelectChange(originalSelect) {
+    if (originalSelect.hasAttribute('data-validate')) {
+      if (window.formValidate) {
+        window.formValidate.validateInput(originalSelect);
+      }
+    }
+    if (originalSelect.hasAttribute('data-submit') && originalSelect.value) {
+      let tempButton = document.createElement("button");
+      tempButton.type = "submit";
+      const form = originalSelect.closest('form');
+      if (form) {
+        form.appendChild(tempButton);
+        tempButton.click();
+        tempButton.remove();
+      }
+    }
+    const selectItem = originalSelect.parentElement;
+    this.selectCallback(selectItem, originalSelect);
+  }
+  selectDisabled(selectItem, originalSelect) {
+    if (originalSelect.disabled) {
+      selectItem.classList.add(this.selectClasses.classSelectDisabled);
+      const titleElement = this.getSelectElement(selectItem, this.selectClasses.classSelectTitle).selectElement;
+      if (titleElement) titleElement.disabled = true;
+    } else {
+      selectItem.classList.remove(this.selectClasses.classSelectDisabled);
+      const titleElement = this.getSelectElement(selectItem, this.selectClasses.classSelectTitle).selectElement;
+      if (titleElement) titleElement.disabled = false;
+    }
+  }
+  searchActions(selectItem) {
+    const originalSelect = this.getSelectElement(selectItem).originalSelect;
+    const selectInput = this.getSelectElement(selectItem, this.selectClasses.classSelectInput).selectElement;
+    const selectOptions = this.getSelectElement(selectItem, this.selectClasses.classSelectOptions).selectElement;
+    const selectOptionsItems = selectOptions.querySelectorAll(`.${this.selectClasses.classSelectOption} `);
+    const _this = this;
+    selectInput.addEventListener("input", function () {
+      selectOptionsItems.forEach(selectOptionsItem => {
+        if (selectOptionsItem.textContent.toUpperCase().includes(selectInput.value.toUpperCase())) {
+          selectOptionsItem.hidden = false;
+        } else {
+          selectOptionsItem.hidden = true;
+        }
+      });
+      selectOptions.hidden === true ? _this.selectAction(selectItem) : null;
+    });
+  }
+  selectCallback(selectItem, originalSelect) {
+    document.dispatchEvent(new CustomEvent("selectCallback", {
+      detail: {
+        select: originalSelect
+      }
+    }));
+  }
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function () {
+    window.modules_flsModules = window.modules_flsModules || {};
+    modules_flsModules.select = new SelectConstructor({});
+  });
+} else {
+  window.modules_flsModules = window.modules_flsModules || {};
+  modules_flsModules.select = new SelectConstructor({});
+}
+
+//========================================================================================================================================================
+
+//Маска
+const telephone = document.querySelectorAll('.telephone');
+if (telephone) {
+  Inputmask({
+    "mask": "+7 (999) 999 - 99 - 99",
+    "showMaskOnHover": false,
+  }).mask(telephone);
+}
+
+//========================================================================================================================================================
+
+let blockSearch = document.querySelectorAll('.block-search');
+
+if (blockSearch) {
+  blockSearch.forEach(block => {
+    const input = block.querySelector('.block-search__input input');
+    const deleteBtn = block.querySelector('.block-search__delete');
+
+    const toggleDeleteBtn = () => {
+      deleteBtn.classList.toggle('active', input.value.trim().length > 0);
+    };
+
+    toggleDeleteBtn();
+
+    input.addEventListener('input', toggleDeleteBtn);
+
+    deleteBtn.addEventListener('click', () => {
+      input.value = '';
+      toggleDeleteBtn();
+      input.focus();
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+  });
+}
+
+//========================================================================================================================================================
+
+const filterCards = document.querySelectorAll('.filter-card');
+if (filterCards) {
+  const filterButtons = document.querySelectorAll('.filter-sorting__button');
+
+  function filterCardsByValue(filterValue) {
+    filterCards.forEach(card => {
+      const cardFilter = card.getAttribute('data-filter');
+      const show = filterValue === 'all' || cardFilter === filterValue;
+      card.style.display = show ? '' : 'none';
+      card.classList.toggle('hidden', !show);
+    });
+  }
+
+  const initialActive = document.querySelector('.filter-sorting__button.active');
+  if (initialActive) {
+    const initialValue = initialActive.getAttribute('data-filter');
+    if (initialValue) filterCardsByValue(initialValue);
+  }
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function () {
+      filterButtons.forEach(btn => btn.classList.remove('active'));
+      this.classList.add('active');
+
+      const filterValue = this.getAttribute('data-filter');
+      filterCardsByValue(filterValue || 'all');
+    });
+  });
+}
+
+//========================================================================================================================================================
+
+if (document.querySelector('.block-imported-product__slider')) {
+  const importedProductSwiper = new Swiper('.block-imported-product__slider', {
+    observer: true,
+    observeParents: true,
+    slidesPerView: 'auto',
+    spaceBetween: 20,
+    speed: 400,
+    preloadImages: true,
+    navigation: {
+      prevEl: '.imported-product-arrow-prev',
+      nextEl: '.imported-product-arrow-next',
+    },
+    breakpoints: {
+      1330: {
+        slidesPerView: 5,
+        spaceBetween: 47,
+      },
+    },
+  });
+}
+
+if (document.querySelector('.block-product-slider__slider')) {
+  const productSwiper = new Swiper('.block-product-slider__slider', {
+    observer: true,
+    observeParents: true,
+    slidesPerView: 'auto',
+    spaceBetween: 20,
+    speed: 400,
+    preloadImages: true,
+    navigation: {
+      prevEl: '.product-arrow-prev',
+      nextEl: '.product-arrow-next',
+    },
+    breakpoints: {
+      1330: {
+        slidesPerView: 3,
+        spaceBetween: 30,
+      },
+    },
+  });
+}
+
+//========================================================================================================================================================
+
+
+Fancybox.bind("[data-fancybox]", {
+  // опции
+});
+
+//========================================================================================================================================================
+
+/*
+
 
 //========================================================================================================================================================
 
@@ -954,19 +2054,6 @@ function menuClose() {
 
 //========================================================================================================================================================
 
-// Добавление к шапке при скролле
-const header = document.querySelector('.header');
-if (header) {
-  window.addEventListener('scroll', function () {
-    if (window.scrollY > 0) {
-      header.classList.add('_header-scroll');
-      document.documentElement.classList.add('header-scroll');
-    } else {
-      header.classList.remove('_header-scroll');
-      document.documentElement.classList.remove('header-scroll');
-    }
-  });
-}
 
 //========================================================================================================================================================
 
@@ -1603,7 +2690,4 @@ pageNavigation();
 
 //========================================================================================================================================================
 
-Fancybox.bind("[data-fancybox]", {
-  // опции
-});
 */
