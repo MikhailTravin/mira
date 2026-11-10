@@ -237,6 +237,65 @@ $starActive: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZp
 }
 */
 
+.checkbox {
+    // .checkbox__input
+
+    &__input {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+        &:checked + .checkbox__label .checkbox__icon svg {
+            opacity: 1;
+        }
+        &:checked + .checkbox__label .checkbox__icon {
+            background-color: var(--63c8f4);
+        }
+        &._form-error + .checkbox__label .checkbox__text {
+            border: 1px solid red;
+        }
+    }
+
+    // .checkbox__label
+
+    &__label {
+        display: flex;
+        gap: 15px;
+    }
+
+    // .checkbox__icon
+
+    &__icon {
+        width: 20px;
+        height: 20px;
+        flex: 0 0 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 5px;
+        background-color: var(--f0f4f4);
+        border: 1px solid transparent;
+        transition:
+            border 0.3s,
+            background-color 0.3s;
+        svg {
+            opacity: 0;
+            transition: opacity 0.3s;
+            fill: var(--ffffff);
+        }
+    }
+
+    // .checkbox__text
+
+    &__text {
+        display: flex;
+        align-items: center;
+        font-weight: 600;
+        font-size: 16px;
+        line-height: 125%;
+    }
+}
+
 .form {
     flex: 0 1 590px;
     display: flex;
@@ -283,6 +342,13 @@ $starActive: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZp
                 border: 2px solid red;
             }
         }
+        &.textarea {
+            flex: 1 1 100%;
+            .form__placeholder {
+                top: 14px;
+                transform: translate(0, 0);
+            }
+        }
         .input {
             transition: border 0.3s;
             font-weight: 400;
@@ -300,6 +366,14 @@ $starActive: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZp
             &.telephone {
                 font-size: 12px;
                 line-height: 167%;
+            }
+            &.textarea {
+                resize: none;
+                padding: 14px 30px;
+                height: 80px;
+                @media (max-width: 550px) {
+                    padding: 14px 15px;
+                }
             }
             &::placeholder {
                 opacity: 0;
@@ -331,6 +405,54 @@ $starActive: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZp
         }
         span {
             color: var(--1f4b98);
+        }
+    }
+
+    // .form__bottom
+
+    &__bottom {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+        @media (max-width: 992px) {
+            flex-direction: column;
+            gap: 30px;
+            margin-top: 0px;
+        }
+        .btn {
+            max-width: 32.8%;
+            @media (max-width: 992px) {
+                max-width: 100%;
+            }
+        }
+        .checkbox {
+            max-width: 27%;
+            left: 0;
+            top: 12px;
+            position: absolute;
+            @media (max-width: 992px) {
+                position: relative;
+                top: 0;
+                max-width: 100%;
+            }
+        }
+        .checkbox__input {
+            &:checked + .checkbox__label .checkbox__icon {
+                background-color: var(--ffffff);
+            }
+        }
+        .checkbox__icon {
+            margin-top: 2px;
+            background-color: var(--ffffff);
+            svg {
+                fill: var(--1f4b98);
+            }
+        }
+        .checkbox__text {
+            font-weight: 400;
+            line-height: 150%;
+            color: rgba(255, 255, 255, 0.8);
         }
     }
 }
@@ -453,6 +575,9 @@ $starActive: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHZp
         scrollbar-width: none;
         &::-webkit-scrollbar {
             display: none;
+        }
+        @media (max-width: 550px) {
+            padding: 10px 15px;
         }
     }
     // .select__scroll
