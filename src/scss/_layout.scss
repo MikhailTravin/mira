@@ -45,6 +45,17 @@
       }
     }
   }
+  .filter-open & {
+    &::before {
+      content: "";
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 110;
+      @media (max-width: 400px) {
+        display: none;
+      }
+    }
+  }
 }
 
 .main {
