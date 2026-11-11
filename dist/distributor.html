@@ -111,6 +111,274 @@
 					</div>
 				</div>
 
+				<div class="block-distributor">
+					<div class="container">
+						<div class="block-search">
+							<div class="block-search__input">
+								<div class="block-search__icon">
+									<svg aria-hidden="true" width="20" height="20">
+										<use xlink:href="img/sprite.svg#search"></use>
+									</svg>
+								</div>
+								<input autocomplete="off" type="text" name="form[]" placeholder="Введите название города или региона...">
+								<button type="button" class="block-search__delete">
+									<svg aria-hidden="true" width="10" height="10">
+										<use xlink:href="img/sprite.svg#close"></use>
+									</svg>
+								</button>
+							</div>
+							<button type="submit" class="btn btn-blue">
+								<span>Найти</span>
+								<div class="btn__arrow">
+									<svg aria-hidden="true" width="14" height="9">
+										<use xlink:href="img/sprite.svg#arrow1"></use>
+									</svg>
+								</div>
+							</button>
+						</div>
+						<div class="block-distributor__content">
+							<div class="block-distributor__top">
+								<div class="block-distributor__points">
+									<div class="block-distributor-point">
+										<div class="block-distributor-point__icon icon-green">
+											<svg aria-hidden="true" width="20" height="20">
+												<use xlink:href="img/sprite.svg#point"></use>
+											</svg>
+										</div>
+										<div class="block-distributor-point__title">
+											Регион свободен для партнерства<br>
+											<span>(Свободно регионов: 47)</span>
+										</div>
+									</div>
+									<div class="block-distributor-point">
+										<div class="block-distributor-point__icon icon-red">
+											<svg aria-hidden="true" width="20" height="20">
+												<use xlink:href="img/sprite.svg#point"></use>
+											</svg>
+										</div>
+										<div class="block-distributor-point__title">
+											Эксклюзив выдан (Регион занят)<br>
+											<span>(Занято регионов: 38)</span>
+										</div>
+									</div>
+								</div>
+								<div class="block-distributor__buttons">
+									<button data-filter="1" type="button" class="block-distributor-button data-filter-button button-map active">
+										<span>На карте</span>
+										<div class="block-distributor-button__icon">
+											<svg aria-hidden="true" width="16" height="16">
+												<use xlink:href="img/sprite.svg#pin2"></use>
+											</svg>
+										</div>
+									</button>
+									<button data-filter="2" type="button" class="block-distributor-button data-filter-button button-list">
+										<span>Списком</span>
+										<div class="block-distributor-button__icon">
+											<svg aria-hidden="true" width="16" height="12">
+												<use xlink:href="img/sprite.svg#list2"></use>
+											</svg>
+										</div>
+									</button>
+								</div>
+							</div>
+							<div class="block-distributor__bottom">
+								<div data-filter="1" class="block-distributor__body filter-card">
+									<div class="block-distributor__map">
+										<img src="img/map.webp" alt="">
+									</div>
+								</div>
+								<div data-filter="2" class="block-distributor__body filter-card">
+									<div data-spollers class="spollers">
+										<div class="spollers__item">
+											<button type="button" data-spoller class="spollers__title">
+												<span>Федеральный округ: Центральный (ЦФО)</span>
+												<span class="spollers__arrow">
+													<svg aria-hidden="true" width="20" height="12">
+														<use xlink:href="img/sprite.svg#arrow4"></use>
+													</svg>
+												</span>
+											</button>
+											<div class="spollers__body">
+												<div class="spollers__columns">
+													<div class="spollers__column">
+														<div class="spollers__name">
+															Москва —
+														</div>
+														<div class="block-distributor-point">
+															<div class="block-distributor-point__icon icon-red">
+																<svg aria-hidden="true" width="20" height="20">
+																	<use xlink:href="img/sprite.svg#point"></use>
+																</svg>
+															</div>
+															<div class="block-distributor-point__title">
+																<span>Занят (ООО «Столица-Фуд»)</span>
+															</div>
+														</div>
+														<a href="./" data-popup="#request-busy" class="spollers__link"></a>
+													</div>
+													<div class="spollers__column">
+														<div class="spollers__name">
+															Тула —
+														</div>
+														<div class="block-distributor-point">
+															<div class="block-distributor-point__icon icon-green">
+																<svg aria-hidden="true" width="20" height="20">
+																	<use xlink:href="img/sprite.svg#point"></use>
+																</svg>
+															</div>
+															<div class="block-distributor-point__title">
+																<span>Свободен</span>
+															</div>
+														</div>
+														<a href="./" data-popup="#request-free" class="spollers__link">
+															<span>Подать заявку</span>
+															<svg aria-hidden="true" width="14" height="9">
+																<use xlink:href="img/sprite.svg#arrow1"></use>
+															</svg>
+														</a>
+													</div>
+													<div class="spollers__column">
+														<div class="spollers__name">
+															Москва —
+														</div>
+														<div class="block-distributor-point">
+															<div class="block-distributor-point__icon icon-green">
+																<svg aria-hidden="true" width="20" height="20">
+																	<use xlink:href="img/sprite.svg#point"></use>
+																</svg>
+															</div>
+															<div class="block-distributor-point__title">
+																<span>Свободен</span>
+															</div>
+														</div>
+														<a href="./" data-popup="#request-free" class="spollers__link">
+															<span>Подать заявку</span>
+															<svg aria-hidden="true" width="14" height="9">
+																<use xlink:href="img/sprite.svg#arrow1"></use>
+															</svg>
+														</a>
+													</div>
+												</div>
+											</div>
+										</div>
+										<div class="spollers__item">
+											<button type="button" data-spoller class="spollers__title">
+												<span>Федеральный округ: Уральский (УрФО)</span>
+												<span class="spollers__arrow">
+													<svg aria-hidden="true" width="20" height="12">
+														<use xlink:href="img/sprite.svg#arrow4"></use>
+													</svg>
+												</span>
+											</button>
+											<div class="spollers__body">
+												<div class="spollers__columns">
+													<div class="spollers__column">
+														<div class="spollers__name">
+															Екатеринбург —
+														</div>
+														<div class="block-distributor-point">
+															<div class="block-distributor-point__icon icon-red">
+																<svg aria-hidden="true" width="20" height="20">
+																	<use xlink:href="img/sprite.svg#point"></use>
+																</svg>
+															</div>
+															<div class="block-distributor-point__title">
+																<span>Занят (ООО «УралДистрибьюшн»)</span>
+															</div>
+														</div>
+														<a href="./" data-popup="#request-busy" class="spollers__link"></a>
+													</div>
+													<div class="spollers__column">
+														<div class="spollers__name">
+															Челябинск —
+														</div>
+														<div class="block-distributor-point">
+															<div class="block-distributor-point__icon icon-green">
+																<svg aria-hidden="true" width="20" height="20">
+																	<use xlink:href="img/sprite.svg#point"></use>
+																</svg>
+															</div>
+															<div class="block-distributor-point__title">
+																<span>Свободен</span>
+															</div>
+														</div>
+														<a href="./" data-popup="#request-free" class="spollers__link">
+															<span>Подать заявку</span>
+															<svg aria-hidden="true" width="14" height="9">
+																<use xlink:href="img/sprite.svg#arrow1"></use>
+															</svg>
+														</a>
+													</div>
+													<div class="spollers__column">
+														<div class="spollers__name">
+															Тюмень —
+														</div>
+														<div class="block-distributor-point">
+															<div class="block-distributor-point__icon icon-green">
+																<svg aria-hidden="true" width="20" height="20">
+																	<use xlink:href="img/sprite.svg#point"></use>
+																</svg>
+															</div>
+															<div class="block-distributor-point__title">
+																<span>Свободен</span>
+															</div>
+														</div>
+														<a href="./" data-popup="#request-free" class="spollers__link">
+															<span>Подать заявку</span>
+															<svg aria-hidden="true" width="14" height="9">
+																<use xlink:href="img/sprite.svg#arrow1"></use>
+															</svg>
+														</a>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="block-distributor-descr">
+									<div class="block-distributor-descr__title">
+										Последние занятые регионы
+									</div>
+									<ul>
+										<li>
+											<div class="block-distributor-descr__icon">
+												<svg aria-hidden="true" width="13" height="14">
+													<use xlink:href="img/sprite.svg#pin"></use>
+												</svg>
+											</div>
+											<span>Иркутск</span>
+										</li>
+										<li>
+											<div class="block-distributor-descr__icon">
+												<svg aria-hidden="true" width="13" height="14">
+													<use xlink:href="img/sprite.svg#pin"></use>
+												</svg>
+											</div>
+											<span>Красноярск</span>
+										</li>
+										<li>
+											<div class="block-distributor-descr__icon">
+												<svg aria-hidden="true" width="13" height="14">
+													<use xlink:href="img/sprite.svg#pin"></use>
+												</svg>
+											</div>
+											<span>Краснодар</span>
+										</li>
+										<li>
+											<div class="block-distributor-descr__icon">
+												<svg aria-hidden="true" width="13" height="14">
+													<use xlink:href="img/sprite.svg#pin"></use>
+												</svg>
+											</div>
+											<span>Казань</span>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				<div class="block-section block-section-distr">
 					<div class="container">
 						<div class="heading-complex">

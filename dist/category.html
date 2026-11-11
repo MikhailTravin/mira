@@ -106,24 +106,654 @@
 							</div>
 						</div>
 						<div class="filter-sorting">
-							<button data-filter="all" type="button" class="filter-sorting__button active">
+							<button data-filter="all" type="button" class="filter-sorting__button data-filter-button active">
 								<span data-text="Все напитки">Все напитки</span>
 							</button>
-							<button data-filter="filter1" type="button" class="filter-sorting__button">
+							<button data-filter="filter1" type="button" class="filter-sorting__button data-filter-button">
 								<span data-text="Энергетические напитки">Энергетические напитки</span>
 							</button>
-							<button data-filter="filter2" type="button" class="filter-sorting__button">
+							<button data-filter="filter2" type="button" class="filter-sorting__button data-filter-button">
 								<span data-text="Лимонады и газировка">Лимонады и газировка</span>
 							</button>
-							<button data-filter="filter3" type="button" class="filter-sorting__button">
+							<button data-filter="filter3" type="button" class="filter-sorting__button data-filter-button">
 								<span data-text="Соки и нектары">Соки и нектары</span>
 							</button>
-							<button data-filter="filter4" type="button" class="filter-sorting__button">
+							<button data-filter="filter4" type="button" class="filter-sorting__button data-filter-button">
 								<span data-text="Холодный чай и кофе">Холодный чай и кофе</span>
 							</button>
-							<button data-filter="filter5" type="button" class="filter-sorting__button">
+							<button data-filter="filter5" type="button" class="filter-sorting__button data-filter-button">
 								<span data-text="Минеральная вода">Минеральная вода</span>
 							</button>
+						</div>
+					</div>
+				</div>
+
+				<div class="block-filter-catalog">
+					<div class="container">
+						<div class="block-filter-catalog__content">
+							<div class="block-filter-catalog__top">
+								<div class="filter-button">
+									<div class="filter-button__icon">
+										<svg aria-hidden="true" width="18" height="18">
+											<use xlink:href="img/sprite.svg#filter"></use>
+										</svg>
+									</div>
+									<span>Фильтр</span>
+								</div>
+								<div class="block-filter-catalog__descr">
+									<div class="block-filter-catalog__result">
+										Всего товаров: <span>45</span>
+									</div>
+									<div class="block-filter-catalog__sorting">
+										<div class="block-filter-catalog__sorting-title">Сортировка:</div>
+										<select name="select" class="select">
+											<option value="1" selected>По алфавиту</option>
+											<option value="2">По алфавиту №2</option>
+											<option value="3">По алфавиту №3</option>
+											<option value="4">По алфавиту №4</option>
+										</select>
+									</div>
+								</div>
+							</div>
+							<div class="block-filter-catalog__bottom">
+								<div class="filter">
+									<div class="filter__top">
+										<div class="filter__name">
+											Фильтр
+										</div>
+										<div class="filter__close">
+											<svg aria-hidden="true" width="20" height="20">
+												<use xlink:href="img/sprite.svg#close"></use>
+											</svg>
+										</div>
+									</div>
+									<div class="filter__body">
+										<div class="filter__column">
+											<div class="filter__title">
+												Бренд:
+											</div>
+											<div class="filter__checkboxes">
+												<label class="checkbox">
+													<input checked class="checkbox__input" type="checkbox" value="1" name="checkbox1">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															MYBRO (СТМ)
+														</span>
+													</span>
+												</label>
+												<label class="checkbox">
+													<input class="checkbox__input" type="checkbox" value="2" name="checkbox1">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															BRATAN (СТМ)
+														</span>
+													</span>
+												</label>
+												<label class="checkbox">
+													<input class="checkbox__input" type="checkbox" value="3" name="checkbox1">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															BRATICO
+														</span>
+													</span>
+												</label>
+											</div>
+										</div>
+										<div class="filter__column">
+											<div class="filter__title">
+												Тип упаковки:
+											</div>
+											<div class="filter__checkboxes">
+												<label class="checkbox">
+													<input class="checkbox__input" type="checkbox" value="1" name="checkbox2">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															Ж/Б банка
+														</span>
+													</span>
+												</label>
+												<label class="checkbox">
+													<input class="checkbox__input" type="checkbox" value="2" name="checkbox2">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															ПЭТ-бутылка
+														</span>
+													</span>
+												</label>
+												<label class="checkbox">
+													<input class="checkbox__input" type="checkbox" value="3" name="checkbox2">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															Стекло
+														</span>
+													</span>
+												</label>
+											</div>
+										</div>
+										<div class="filter__column">
+											<div class="filter__title">
+												Объем:
+											</div>
+											<div class="filter__checkboxes">
+												<label class="checkbox">
+													<input class="checkbox__input" type="checkbox" value="1" name="checkbox3">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															0.25 л
+														</span>
+													</span>
+												</label>
+												<label class="checkbox">
+													<input class="checkbox__input" type="checkbox" value="2" name="checkbox3">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															0.33 л
+														</span>
+													</span>
+												</label>
+												<label class="checkbox">
+													<input class="checkbox__input" type="checkbox" value="3" name="checkbox3">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															0.5 л
+														</span>
+													</span>
+												</label>
+												<label class="checkbox">
+													<input class="checkbox__input" type="checkbox" value="4" name="checkbox3">
+													<span class="checkbox__label">
+														<span class="checkbox__icon">
+															<svg aria-hidden="true" width="12" height="11">
+																<use xlink:href="img/sprite.svg#tick"></use>
+															</svg>
+														</span>
+														<span class="checkbox__text">
+															1.0 л и более
+														</span>
+													</span>
+												</label>
+											</div>
+										</div>
+									</div>
+									<div class="filter__buttons">
+										<a href="./" class="btn btn-dark-blue">
+											<span>Показать (45)</span>
+										</a>
+										<button type="button" class="filter__delete">
+											<div class="filter__icon">
+												<svg aria-hidden="true" width="13" height="13">
+													<use xlink:href="img/sprite.svg#close"></use>
+												</svg>
+											</div>
+											<span>Сбросить фильтр</span>
+										</button>
+									</div>
+								</div>
+								<div class="block-filter-catalog__body">
+									<div class="block-filter-catalog__cards">
+										<a data-filter="filter1" href="./" class="card-product filter-card">
+											<div class="card-product__image">
+												<div class="card-product__badges">
+													<div class="card-product__badge badge-dark-blue">
+														Новинка
+													</div>
+													<div class="card-product__badge badge-blue">
+														Хит
+													</div>
+												</div>
+												<img src="img/products/image1.webp" alt="" class="card-product__pic1">
+												<div class="card-product__logo">
+													<span>MYBRO</span>
+												</div>
+											</div>
+											<div class="card-product-item">
+												<div class="card-product-item__top">
+													<div class="card-product-item__title">
+														Напиток безалк. негаз со вкусом яблоко с кусочками желе
+													</div>
+													<div class="card-product-item__prices">
+														<div class="card-product-item__price">
+															18 ₽ <span>/шт. с НДС</span>
+														</div>
+														<div class="card-product-item__info">
+															<svg aria-hidden="true" width="12" height="12">
+																<use xlink:href="img/sprite.svg#info"></use>
+															</svg>
+															<span>Цена на границе, доставка отдельно</span>
+														</div>
+													</div>
+												</div>
+												<div class="card-product-item__descr">
+													<ul>
+														<li>
+															<div class="card-product-item__name">
+																Объем
+															</div>
+															<div class="card-product-item__value">
+																0,18 л
+															</div>
+														</li>
+														<li>
+															<div class="card-product-item__name">
+																В коробке
+															</div>
+															<div class="card-product-item__value">
+																96 шт
+															</div>
+														</li>
+													</ul>
+												</div>
+												<div class="btn btn-blue">
+													<span>Подробнее</span>
+													<div class="btn__arrow">
+														<svg aria-hidden="true" width="14" height="9">
+															<use xlink:href="img/sprite.svg#arrow1"></use>
+														</svg>
+													</div>
+												</div>
+											</div>
+										</a>
+										<a data-filter="filter2" href="./" class="card-product filter-card">
+											<div class="card-product__image">
+												<div class="card-product__badges">
+													<div class="card-product__badge badge-dark-blue">
+														Новинка
+													</div>
+													<div class="card-product__badge badge-blue">
+														Хит
+													</div>
+												</div>
+												<img src="img/products/image2.webp" alt="" class="card-product__pic1">
+												<div class="card-product__logo">
+													<span>MYBRO</span>
+												</div>
+											</div>
+											<div class="card-product-item">
+												<div class="card-product-item__top">
+													<div class="card-product-item__title">
+														Напиток безалкогольный не газированный со вкусом апельсина желе
+													</div>
+													<div class="card-product-item__prices">
+														<div class="card-product-item__price">
+															63 ₽ <span>/шт. с НДС</span>
+														</div>
+														<div class="card-product-item__info">
+															<svg aria-hidden="true" width="12" height="12">
+																<use xlink:href="img/sprite.svg#info"></use>
+															</svg>
+															<span>Цена на границе, доставка отдельно</span>
+														</div>
+													</div>
+												</div>
+												<div class="card-product-item__descr">
+													<ul>
+														<li>
+															<div class="card-product-item__name">
+																Объем
+															</div>
+															<div class="card-product-item__value">
+																620 мл
+															</div>
+														</li>
+														<li>
+															<div class="card-product-item__name">
+																В коробке
+															</div>
+															<div class="card-product-item__value">
+																15 шт
+															</div>
+														</li>
+													</ul>
+												</div>
+												<div class="btn btn-blue">
+													<span>Подробнее</span>
+													<div class="btn__arrow">
+														<svg aria-hidden="true" width="14" height="9">
+															<use xlink:href="img/sprite.svg#arrow1"></use>
+														</svg>
+													</div>
+												</div>
+											</div>
+										</a>
+										<a data-filter="filter3" href="./" class="card-product filter-card">
+											<div class="card-product__image">
+												<div class="card-product__badges">
+													<div class="card-product__badge badge-dark-blue">
+														Новинка
+													</div>
+													<div class="card-product__badge badge-blue">
+														Хит
+													</div>
+												</div>
+												<img src="img/products/image3.webp" alt="" class="card-product__pic1">
+												<div class="card-product__logo">
+													<span>MYBRO</span>
+												</div>
+											</div>
+											<div class="card-product-item">
+												<div class="card-product-item__top">
+													<div class="card-product-item__title">
+														Напиток сокосодержащий с кусочками желе со вкусом клубники
+													</div>
+													<div class="card-product-item__prices">
+														<div class="card-product-item__price">
+															80 ₽ <span>/шт. с НДС</span>
+														</div>
+														<div class="card-product-item__info">
+															<svg aria-hidden="true" width="12" height="12">
+																<use xlink:href="img/sprite.svg#info"></use>
+															</svg>
+															<span>Цена на границе, доставка отдельно</span>
+														</div>
+													</div>
+												</div>
+												<div class="card-product-item__descr">
+													<ul>
+														<li>
+															<div class="card-product-item__name">
+																Объем
+															</div>
+															<div class="card-product-item__value">
+																600 мл
+															</div>
+														</li>
+														<li>
+															<div class="card-product-item__name">
+																В коробке
+															</div>
+															<div class="card-product-item__value">
+																12 шт
+															</div>
+														</li>
+													</ul>
+												</div>
+												<div class="btn btn-blue">
+													<span>Подробнее</span>
+													<div class="btn__arrow">
+														<svg aria-hidden="true" width="14" height="9">
+															<use xlink:href="img/sprite.svg#arrow1"></use>
+														</svg>
+													</div>
+												</div>
+											</div>
+										</a>
+										<a data-filter="filter4" href="./" class="card-product filter-card">
+											<div class="card-product__image">
+												<div class="card-product__badges">
+													<div class="card-product__badge badge-dark-blue">
+														Новинка
+													</div>
+													<div class="card-product__badge badge-blue">
+														Хит
+													</div>
+												</div>
+												<img src="img/products/image4.webp" alt="" class="card-product__pic1">
+												<div class="card-product__logo">
+													<span>MYBRO</span>
+												</div>
+											</div>
+											<div class="card-product-item">
+												<div class="card-product-item__top">
+													<div class="card-product-item__title">
+														Напиток из сока маракуй и с фруктовыми кусочками
+													</div>
+													<div class="card-product-item__prices">
+														<div class="card-product-item__price">
+															87 ₽ <span>/шт. с НДС</span>
+														</div>
+														<div class="card-product-item__info">
+															<svg aria-hidden="true" width="12" height="12">
+																<use xlink:href="img/sprite.svg#info"></use>
+															</svg>
+															<span>Цена на границе, доставка отдельно</span>
+														</div>
+													</div>
+												</div>
+												<div class="card-product-item__descr">
+													<ul>
+														<li>
+															<div class="card-product-item__name">
+																Объем
+															</div>
+															<div class="card-product-item__value">
+																490 мл
+															</div>
+														</li>
+														<li>
+															<div class="card-product-item__name">
+																В коробке
+															</div>
+															<div class="card-product-item__value">
+																15 шт
+															</div>
+														</li>
+													</ul>
+												</div>
+												<div class="btn btn-blue">
+													<span>Подробнее</span>
+													<div class="btn__arrow">
+														<svg aria-hidden="true" width="14" height="9">
+															<use xlink:href="img/sprite.svg#arrow1"></use>
+														</svg>
+													</div>
+												</div>
+											</div>
+										</a>
+										<a data-filter="filter5" href="./" class="card-product filter-card">
+											<div class="card-product__image">
+												<div class="card-product__badges">
+													<div class="card-product__badge badge-dark-blue">
+														Новинка
+													</div>
+													<div class="card-product__badge badge-blue">
+														Хит
+													</div>
+												</div>
+												<img src="img/products/image1.webp" alt="" class="card-product__pic1">
+												<div class="card-product__logo">
+													<span>MYBRO</span>
+												</div>
+											</div>
+											<div class="card-product-item">
+												<div class="card-product-item__top">
+													<div class="card-product-item__title">
+														Напиток безалк. негаз со вкусом яблоко с кусочками желе
+													</div>
+													<div class="card-product-item__prices">
+														<div class="card-product-item__price">
+															18 ₽ <span>/шт. с НДС</span>
+														</div>
+														<div class="card-product-item__info">
+															<svg aria-hidden="true" width="12" height="12">
+																<use xlink:href="img/sprite.svg#info"></use>
+															</svg>
+															<span>Цена на границе, доставка отдельно</span>
+														</div>
+													</div>
+												</div>
+												<div class="card-product-item__descr">
+													<ul>
+														<li>
+															<div class="card-product-item__name">
+																Объем
+															</div>
+															<div class="card-product-item__value">
+																0,18 л
+															</div>
+														</li>
+														<li>
+															<div class="card-product-item__name">
+																В коробке
+															</div>
+															<div class="card-product-item__value">
+																96 шт
+															</div>
+														</li>
+													</ul>
+												</div>
+												<div class="btn btn-blue">
+													<span>Подробнее</span>
+													<div class="btn__arrow">
+														<svg aria-hidden="true" width="14" height="9">
+															<use xlink:href="img/sprite.svg#arrow1"></use>
+														</svg>
+													</div>
+												</div>
+											</div>
+										</a>
+										<a data-filter="filter1" href="./" class="card-product filter-card">
+											<div class="card-product__image">
+												<div class="card-product__badges">
+													<div class="card-product__badge badge-dark-blue">
+														Новинка
+													</div>
+													<div class="card-product__badge badge-blue">
+														Хит
+													</div>
+												</div>
+												<img src="img/products/image2.webp" alt="" class="card-product__pic1">
+												<div class="card-product__logo">
+													<span>MYBRO</span>
+												</div>
+											</div>
+											<div class="card-product-item">
+												<div class="card-product-item__top">
+													<div class="card-product-item__title">
+														Напиток безалкогольный не газированный со вкусом апельсина желе
+													</div>
+													<div class="card-product-item__prices">
+														<div class="card-product-item__price">
+															63 ₽ <span>/шт. с НДС</span>
+														</div>
+														<div class="card-product-item__info">
+															<svg aria-hidden="true" width="12" height="12">
+																<use xlink:href="img/sprite.svg#info"></use>
+															</svg>
+															<span>Цена на границе, доставка отдельно</span>
+														</div>
+													</div>
+												</div>
+												<div class="card-product-item__descr">
+													<ul>
+														<li>
+															<div class="card-product-item__name">
+																Объем
+															</div>
+															<div class="card-product-item__value">
+																620 мл
+															</div>
+														</li>
+														<li>
+															<div class="card-product-item__name">
+																В коробке
+															</div>
+															<div class="card-product-item__value">
+																15 шт
+															</div>
+														</li>
+													</ul>
+												</div>
+												<div class="btn btn-blue">
+													<span>Подробнее</span>
+													<div class="btn__arrow">
+														<svg aria-hidden="true" width="14" height="9">
+															<use xlink:href="img/sprite.svg#arrow1"></use>
+														</svg>
+													</div>
+												</div>
+											</div>
+										</a>
+									</div>
+									<div class="pagging">
+										<div class="pagging__more">
+											<a href="./" class="btn btn-grey">
+												<span>Показать еще 20 товаров</span>
+												<div class="btn__arrow">
+													<svg aria-hidden="true" width="14" height="9">
+														<use xlink:href="img/sprite.svg#arrow1"></use>
+													</svg>
+												</div>
+											</a>
+										</div>
+										<div class="pagging__center">
+											<a class="pagging__item" href="./">
+												<span>1</span>
+											</a>
+											<a class="pagging__item pagging__item_active" href="./">
+												<span>2</span>
+											</a>
+											<a class="pagging__item pagging__item_ellipsis" href="./">
+												<span>...</span>
+											</a>
+											<a class="pagging__item" href="./">
+												<span>14</span>
+											</a>
+											<a class="pagging__item" href="./">
+												<span>15</span>
+											</a>
+										</div>
+										<div class="pagging__navs">
+											<span class="pagging__item_nav pagging__item_nav-prev">
+												<svg aria-hidden="true" width="20" height="14">
+													<use xlink:href="img/sprite.svg#arrow3"></use>
+												</svg>
+												<span>Назад</span>
+											</span>
+											<a class="pagging__item_nav  pagging__item_nav-next" href="./">
+												<span>Далее</span>
+												<svg aria-hidden="true" width="20" height="14">
+													<use xlink:href="img/sprite.svg#arrow3"></use>
+												</svg>
+											</a>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
