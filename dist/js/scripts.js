@@ -210,30 +210,23 @@ function formFieldsInit(options = { viewPass: true, autoHeight: false }) {
         targetElement.parentElement.classList.remove('_form-focus');
       }
       targetElement.hasAttribute('data-validate') ? formValidate.validateInput(targetElement) : null;
+      updateFilled(targetElement);
     }
   });
-  document.body.addEventListener("input", function (e) {
-    const targetElement = e.target;
-    if (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA') {
-      if (targetElement.value.trim()) {
-        targetElement.classList.add('filled');
-        targetElement.parentElement.classList.add('filled');
-      } else {
-        targetElement.classList.remove('filled');
-        targetElement.parentElement.classList.remove('filled');
-      }
+  function updateFilled(el) {
+    if (el.value.trim() !== '') {
+      el.classList.add('filled');
+      el.parentElement.classList.add('filled');
+    } else {
+      el.classList.remove('filled');
+      el.parentElement.classList.remove('filled');
     }
-  });
-  document.body.addEventListener("change", function (e) {
+  }
+  document.querySelectorAll('input, textarea').forEach(el => updateFilled(el));
+  document.body.addEventListener('input', function (e) {
     const targetElement = e.target;
     if (targetElement.tagName === 'INPUT' || targetElement.tagName === 'TEXTAREA') {
-      if (targetElement.value.trim()) {
-        targetElement.classList.add('filled');
-        targetElement.parentElement.classList.add('filled');
-      } else {
-        targetElement.classList.remove('filled');
-        targetElement.parentElement.classList.remove('filled');
-      }
+      updateFilled(targetElement);
     }
   });
   if (options.viewPass) {
@@ -371,8 +364,8 @@ let formValidate = {
         el.classList.remove('_form-success');
         el.parentElement.classList.remove('_form-success');
 
-        el.parentElement.classList.remove('filled');
         el.classList.remove('filled');
+        el.parentElement.classList.remove('filled');
 
         formValidate.removeError(el);
 
@@ -421,109 +414,27 @@ function formSubmit() {
       });
     }
   }
-
   async function formSubmitAction(form, e) {
     const error = !form.hasAttribute('data-no-validate') ? formValidate.getErrors(form) : 0;
-
     if (error === 0) {
       const ajax = form.hasAttribute('data-ajax');
-
       if (ajax) {
         e.preventDefault();
-
-        const customSelects = form.querySelectorAll('.select');
-
-        customSelects.forEach(selectItem => {
-          const originalSelect = selectItem.querySelector('select');
-          if (!originalSelect) return;
-
-          let contactMethod = 'Не выбран';
-          let contactValue = 'Не указан';
-
-          const selectedOption = originalSelect.options[originalSelect.selectedIndex];
-
-          if (selectedOption && selectedOption.value) {
-            if (selectedOption.dataset.custom === 'true') {
-              contactMethod = originalSelect.dataset.currentMethod || 'Не выбран';
-              contactValue = originalSelect.dataset.userInput || selectedOption.value;
-            } else {
-              contactMethod = selectedOption.dataset.value || selectedOption.value;
-              contactValue = selectedOption.value;
-              originalSelect.dataset.currentMethod = contactMethod;
-            }
-          }
-
-          const oldMethodInput = form.querySelector('input[name="contact_method"]');
-          const oldValueInput = form.querySelector('input[name="user_contact_value"]');
-          if (oldMethodInput) oldMethodInput.remove();
-          if (oldValueInput) oldValueInput.remove();
-
-          const methodInput = document.createElement('input');
-          methodInput.type = 'hidden';
-          methodInput.name = 'contact_method';
-          methodInput.value = contactMethod;
-          form.appendChild(methodInput);
-
-          const valueInput = document.createElement('input');
-          valueInput.type = 'hidden';
-          valueInput.name = 'user_contact_value';
-          valueInput.value = contactValue;
-          form.appendChild(valueInput);
-        });
-
         const formAction = form.getAttribute('action') ? form.getAttribute('action').trim() : '#';
         const formMethod = form.getAttribute('method') ? form.getAttribute('method').trim() : 'GET';
         const formData = new FormData(form);
 
         form.classList.add('_sending');
-
-        try {
-          const response = await fetch(formAction, {
-            method: formMethod,
-            body: formData
-          });
-
-          if (response.ok) {
-            const textResponse = await response.text();
-
-            try {
-              let responseResult = JSON.parse(textResponse);
-
-              form.classList.remove('_sending');
-
-              if (responseResult.success) {
-                formSent(form, responseResult);
-
-                setTimeout(() => {
-                  form.reset();
-                  const allSelects = form.querySelectorAll('select');
-                  allSelects.forEach(select => {
-                    delete select.dataset.userInput;
-                    delete select.dataset.currentMethod;
-                    const customOpt = select.querySelector('option[data-custom="true"]');
-                    if (customOpt) customOpt.remove();
-                    Array.from(select.options).forEach(option => {
-                      if (option.dataset.originalValue) {
-                        option.value = option.dataset.originalValue;
-                        delete option.dataset.originalValue;
-                      }
-                    });
-                    select.selectedIndex = 0;
-                  });
-                }, 500);
-
-              } else {
-                alert("Ошибка: " + (responseResult.message || "Неизвестная ошибка"));
-              }
-            } catch (parseError) {
-              alert("Ошибка: сервер вернул неверный формат данных");
-            }
-          } else {
-            alert("Ошибка сервера: " + response.status);
-            form.classList.remove('_sending');
-          }
-        } catch (error) {
-          alert("Ошибка отправки формы: " + error.message);
+        const response = await fetch(formAction, {
+          method: formMethod,
+          body: formData
+        });
+        if (response.ok) {
+          let responseResult = await response.json();
+          form.classList.remove('_sending');
+          formSent(form, responseResult);
+        } else {
+          alert("Помилка");
           form.classList.remove('_sending');
         }
       } else if (form.hasAttribute('data-dev')) {
@@ -538,7 +449,6 @@ function formSubmit() {
       }
     }
   }
-
   function formSent(form, responseResult = ``) {
     document.dispatchEvent(new CustomEvent("formSent", {
       detail: {
@@ -548,152 +458,22 @@ function formSubmit() {
 
     const telephoneInputs = form.querySelectorAll('.telephone');
     telephoneInputs.forEach(input => {
-      input.value = '';
       const parent = input.closest('.form__input');
       if (parent) {
         parent.classList.remove('filled');
       }
-      input.classList.remove('filled');
     });
 
-    const fileInputs = form.querySelectorAll('input[type="file"]');
-    fileInputs.forEach(fileInput => {
-      fileInput.value = '';
-      const formFile = fileInput.closest('.form-file');
-      if (formFile) {
-        const formFileInput = formFile.querySelector('.form-file__input');
-        if (formFileInput) {
-          const originalText = formFileInput.dataset.originalText || 'Прикрепить текущий расчет / КП';
-          formFileInput.textContent = originalText;
-        }
+    setTimeout(() => {
+      if (modules_flsModules.popup) {
+        const popup = form.dataset.popupMessage;
+        popup ? modules_flsModules.popup.open(popup) : null;
       }
-    });
+    }, 0);
 
-    const customSelects = form.querySelectorAll('.select');
-    customSelects.forEach(selectItem => {
-      const originalSelect = selectItem.querySelector('select');
-      if (originalSelect) {
-        const customOption = originalSelect.querySelector('option[data-custom="true"]');
-        if (customOption) {
-          customOption.remove();
-        }
-
-        Array.from(originalSelect.options).forEach(option => {
-          if (option.dataset.originalValue) {
-            option.value = option.dataset.originalValue;
-            delete option.dataset.originalValue;
-          }
-        });
-
-        originalSelect.selectedIndex = 0;
-
-        delete originalSelect.dataset.userInput;
-        delete originalSelect.dataset.currentMethod;
-
-        const contentInput = selectItem.querySelector('.select__content');
-        if (contentInput) {
-          contentInput.value = '';
-          const placeholder = originalSelect.dataset.placeholder || '';
-          contentInput.placeholder = placeholder;
-        }
-
-        selectItem.classList.remove('_select-active');
-
-        const optionButtons = selectItem.querySelectorAll('.select__option');
-        optionButtons.forEach(btn => {
-          btn.hidden = false;
-        });
-
-        if (!originalSelect.hasAttribute('data-show-selected')) {
-          const firstOption = selectItem.querySelector('.select__option[data-value]');
-          if (firstOption && originalSelect.selectedIndex === 0) {
-            firstOption.hidden = true;
-          }
-        }
-
-        if (typeof SelectConstructor !== 'undefined') {
-          const selectInstance = new SelectConstructor({ init: false });
-          selectInstance.setSelectTitleValue(selectItem, originalSelect);
-        }
-      }
-    });
-
-    const hiddenInputs = form.querySelectorAll('input[type="hidden"]');
-    hiddenInputs.forEach(input => {
-      if (input.name === 'button_subject' ||
-        input.name === 'contact_method' ||
-        input.name === 'user_contact_value') {
-        input.value = '';
-      }
-    });
-
-    if (typeof formValidate !== 'undefined' && formValidate.formClean) {
-      formValidate.formClean(form);
-    }
-
-    const popupSelector = form.dataset.popupMessage;
-    let popup = null;
-
-    if (popupSelector) {
-      if (popupSelector.startsWith('#')) {
-        popup = document.querySelector(popupSelector);
-      } else {
-        popup = document.querySelector(`[data-popup="${popupSelector}"]`) ||
-          document.querySelector(`.${popupSelector.replace('.', '')}`);
-      }
-    }
-
-    document.querySelectorAll('.popup_show').forEach(p => {
-      p.classList.remove('popup_show');
-      p.setAttribute('aria-hidden', 'true');
-    });
-
-    if (popup) {
-      if (typeof popupOpen === 'function') {
-        popupOpen(popupSelector);
-      }
-      else if (typeof openPopup === 'function') {
-        openPopup(popup);
-      }
-      else {
-        popup.classList.add('popup_show');
-        popup.setAttribute('aria-hidden', 'false');
-
-        document.documentElement.classList.add('lock', 'popup-show');
-
-        if (typeof bodyLock === 'function') {
-          bodyLock();
-        } else if (typeof bodyLockToggle === 'function') {
-          bodyLockToggle();
-        } else {
-          document.body.style.overflow = 'hidden';
-          document.body.style.paddingRight = '17px';
-        }
-      }
-
-      document.documentElement.classList.remove('open-quiz');
-
-      const closePopupHandler = function (e) {
-        if (e.target === popup || e.target.closest('.popup__close') || e.target.closest('[data-close]')) {
-          popup.classList.remove('popup_show');
-          popup.setAttribute('aria-hidden', 'true');
-          document.documentElement.classList.remove('lock', 'popup-show');
-          document.body.style.overflow = '';
-          document.body.style.paddingRight = '';
-          document.removeEventListener('click', closePopupHandler);
-        }
-      };
-
-      setTimeout(() => {
-        document.addEventListener('click', closePopupHandler);
-      }, 100);
-
-    } else {
-      window.location.href = 'thanks.html';
-    }
+    formValidate.formClean(form);
   }
 }
-
 formSubmit();
 
 //========================================================================================================================================================
@@ -1720,3 +1500,265 @@ spollers();
 window.addEventListener('resize', function () {
   spollers();
 });
+
+//========================================================================================================================================================
+
+//Попап
+class Popup {
+  constructor(options) {
+    let config = {
+      logging: true,
+      init: true,
+      attributeOpenButton: "data-popup",
+      attributeCloseButton: "data-close",
+      fixElementSelector: "[data-lp]",
+      youtubeAttribute: "data-popup-youtube",
+      youtubePlaceAttribute: "data-popup-youtube-place",
+      setAutoplayYoutube: true,
+      classes: {
+        popup: "popup",
+        popupContent: "popup__content",
+        popupActive: "popup_show",
+        bodyActive: "popup-show"
+      },
+      focusCatch: true,
+      closeEsc: true,
+      bodyLock: true,
+      hashSettings: {
+        goHash: true
+      },
+      on: {
+        beforeOpen: function () { },
+        afterOpen: function () { },
+        beforeClose: function () { },
+        afterClose: function () { }
+      }
+    };
+    this.youTubeCode;
+    this.isOpen = false;
+    this.targetOpen = {
+      selector: false,
+      element: false
+    };
+    this.previousOpen = {
+      selector: false,
+      element: false
+    };
+    this.lastClosed = {
+      selector: false,
+      element: false
+    };
+    this._dataValue = false;
+    this.hash = false;
+    this._reopen = false;
+    this._selectorOpen = false;
+    this.lastFocusEl = false;
+    this._focusEl = ["a[href]", 'input:not([disabled]):not([type="hidden"]):not([aria-hidden])', "button:not([disabled]):not([aria-hidden])", "select:not([disabled]):not([aria-hidden])", "textarea:not([disabled]):not([aria-hidden])", "area[href]", "iframe", "object", "embed", "[contenteditable]", '[tabindex]:not([tabindex^="-"])'];
+    this.options = {
+      ...config,
+      ...options,
+      classes: {
+        ...config.classes,
+        ...options?.classes
+      },
+      hashSettings: {
+        ...config.hashSettings,
+        ...options?.hashSettings
+      },
+      on: {
+        ...config.on,
+        ...options?.on
+      }
+    };
+    this.bodyLock = false;
+    this.previousMenuState = false;
+    this.options.init ? this.initPopups() : null;
+  }
+  initPopups() {
+    this.eventsPopup();
+  }
+  eventsPopup() {
+    document.addEventListener("click", function (e) {
+      const buttonOpen = e.target.closest(`[${this.options.attributeOpenButton}]`);
+      if (buttonOpen) {
+        e.preventDefault();
+        this._dataValue = buttonOpen.getAttribute(this.options.attributeOpenButton) ? buttonOpen.getAttribute(this.options.attributeOpenButton) : "error";
+        this.youTubeCode = buttonOpen.getAttribute(this.options.youtubeAttribute) ? buttonOpen.getAttribute(this.options.youtubeAttribute) : null;
+        if ("error" !== this._dataValue) {
+          if (!this.isOpen) this.lastFocusEl = buttonOpen;
+          this.targetOpen.selector = `${this._dataValue}`;
+          this._selectorOpen = true;
+          this.open();
+          return;
+        }
+        return;
+      }
+      const buttonClose = e.target.closest(`[${this.options.attributeCloseButton}]`);
+      if (buttonClose || !e.target.closest(`.${this.options.classes.popupContent}`) && this.isOpen) {
+        e.preventDefault();
+        this.close();
+        return;
+      }
+    }.bind(this));
+    document.addEventListener("keydown", function (e) {
+      if (this.options.closeEsc && 27 == e.which && "Escape" === e.code && this.isOpen) {
+        e.preventDefault();
+        this.close();
+        return;
+      }
+      if (this.options.focusCatch && 9 == e.which && this.isOpen) {
+        this._focusCatch(e);
+        return;
+      }
+    }.bind(this));
+    if (this.options.hashSettings.goHash) {
+      window.addEventListener("hashchange", function () {
+        if (window.location.hash) this._openToHash(); else this.close(this.targetOpen.selector);
+      }.bind(this));
+      window.addEventListener("load", function () {
+        if (window.location.hash) this._openToHash();
+      }.bind(this));
+    }
+  }
+  open(selectorValue) {
+    if (bodyLockStatus) {
+      this.bodyLock = document.documentElement.classList.contains("lock") && !this.isOpen ? true : false;
+      if (selectorValue && "string" === typeof selectorValue && "" !== selectorValue.trim()) {
+        this.targetOpen.selector = selectorValue;
+        this._selectorOpen = true;
+      }
+      if (this.isOpen) {
+        this._reopen = true;
+        this.close();
+      }
+      if (!this._selectorOpen) this.targetOpen.selector = this.lastClosed.selector;
+      if (!this._reopen) this.previousActiveElement = document.activeElement;
+      this.targetOpen.element = document.querySelector(this.targetOpen.selector);
+      if (this.targetOpen.element) {
+        this.previousMenuState = document.documentElement.classList.contains('menu-open');
+        if (this.previousMenuState) {
+          if (typeof menuClose === 'function') {
+            menuClose();
+          } else {
+            document.documentElement.classList.remove("menu-open");
+            if (typeof bodyUnlock === 'function') bodyUnlock();
+          }
+        }
+        if (this.youTubeCode) {
+          const codeVideo = this.youTubeCode;
+          const urlVideo = `https://www.youtube.com/embed/${codeVideo}?rel=0&showinfo=0&autoplay=1`;
+          const iframe = document.createElement("iframe");
+          iframe.setAttribute("allowfullscreen", "");
+          const autoplay = this.options.setAutoplayYoutube ? "autoplay;" : "";
+          iframe.setAttribute("allow", `${autoplay}; encrypted-media`);
+          iframe.setAttribute("src", urlVideo);
+          if (!this.targetOpen.element.querySelector(`[${this.options.youtubePlaceAttribute}]`)) {
+            this.targetOpen.element.querySelector(".popup__text").setAttribute(`${this.options.youtubePlaceAttribute}`, "");
+          }
+          this.targetOpen.element.querySelector(`[${this.options.youtubePlaceAttribute}]`).appendChild(iframe);
+        }
+        const videoElement = this.targetOpen.element.querySelector("video");
+        if (videoElement) {
+          videoElement.muted = true;
+          videoElement.currentTime = 0;
+          videoElement.play().catch((e => console.error("Autoplay error:", e)));
+        }
+        if (this.options.hashSettings.location) {
+          this._getHash();
+          this._setHash();
+        }
+        this.options.on.beforeOpen(this);
+        document.dispatchEvent(new CustomEvent("beforePopupOpen", {
+          detail: {
+            popup: this
+          }
+        }));
+        this.targetOpen.element.classList.add(this.options.classes.popupActive);
+        document.documentElement.classList.add(this.options.classes.bodyActive);
+        if (!this._reopen) !this.bodyLock ? bodyLock() : null; else this._reopen = false;
+        this.targetOpen.element.setAttribute("aria-hidden", "false");
+        this.previousOpen.selector = this.targetOpen.selector;
+        this.previousOpen.element = this.targetOpen.element;
+        this._selectorOpen = false;
+        this.isOpen = true;
+        this.options.on.afterOpen(this);
+        document.dispatchEvent(new CustomEvent("afterPopupOpen", {
+          detail: {
+            popup: this
+          }
+        }));
+      }
+    }
+  }
+  close(selectorValue) {
+    if (selectorValue && "string" === typeof selectorValue && "" !== selectorValue.trim()) this.previousOpen.selector = selectorValue;
+    if (!this.isOpen || !bodyLockStatus) return;
+    this.options.on.beforeClose(this);
+    document.dispatchEvent(new CustomEvent("beforePopupClose", {
+      detail: {
+        popup: this
+      }
+    }));
+    if (this.youTubeCode) if (this.targetOpen.element.querySelector(`[${this.options.youtubePlaceAttribute}]`)) this.targetOpen.element.querySelector(`[${this.options.youtubePlaceAttribute}]`).innerHTML = "";
+    this.previousOpen.element.classList.remove(this.options.classes.popupActive);
+    const videoElement = this.previousOpen.element.querySelector("video");
+    if (videoElement) videoElement.pause();
+    this.previousOpen.element.setAttribute("aria-hidden", "true");
+    if (!this._reopen) {
+      document.documentElement.classList.remove(this.options.classes.bodyActive);
+      !this.bodyLock ? bodyUnlock() : null;
+      this.isOpen = false;
+      if (this.previousMenuState) {
+        if (typeof menuOpen === 'function') {
+          menuOpen();
+        } else {
+          document.documentElement.classList.add("menu-open");
+          if (typeof bodyLock === 'function') bodyLock();
+        }
+      }
+    }
+    document.dispatchEvent(new CustomEvent("afterPopupClose", {
+      detail: {
+        popup: this
+      }
+    }));
+    this.options.on.afterClose(this);
+  }
+  _getHash() {
+    if (this.options.hashSettings.location) this.hash = this.targetOpen.selector.includes("#") ? this.targetOpen.selector : this.targetOpen.selector.replace(".", "#");
+  }
+  _openToHash() {
+    let classInHash = document.querySelector(`.${window.location.hash.replace("#", "")}`) ? `.${window.location.hash.replace("#", "")}` : document.querySelector(`${window.location.hash}`) ? `${window.location.hash}` : null;
+    const buttons = document.querySelector(`[${this.options.attributeOpenButton} = "${classInHash}"]`) ? document.querySelector(`[${this.options.attributeOpenButton} = "${classInHash}"]`) : document.querySelector(`[${this.options.attributeOpenButton} = "${classInHash.replace(".", "#")}"]`);
+    if (buttons && classInHash) this.open(classInHash);
+  }
+  _setHash() {
+    history.pushState("", "", this.hash);
+  }
+  _removeHash() {
+    history.pushState("", "", window.location.href.split("#")[0]);
+  }
+  _focusCatch(e) {
+    const focusable = this.targetOpen.element.querySelectorAll(this._focusEl);
+    const focusArray = Array.prototype.slice.call(focusable);
+    const focusedIndex = focusArray.indexOf(document.activeElement);
+    if (e.shiftKey && 0 === focusedIndex) {
+      focusArray[focusArray.length - 1].focus();
+      e.preventDefault();
+    }
+    if (!e.shiftKey && focusedIndex === focusArray.length - 1) {
+      focusArray[0].focus();
+      e.preventDefault();
+    }
+  }
+}
+modules_flsModules.popup = new Popup({});
+
+function menuOpen() {
+  bodyLock();
+  document.documentElement.classList.add("menu-open");
+}
+function menuClose() {
+  bodyUnlock();
+  document.documentElement.classList.remove("menu-open");
+}
